@@ -40,9 +40,7 @@ class NodeJSMetadataHook(MetadataHookInterface):
             version_file = self.config.get("path", "package.json")
             if not isinstance(version_file, str):
                 raise TypeError(
-                    "Option `path` for metadata hook `{}` must be a string".format(
-                        self.PLUGIN_NAME
-                    )
+                    f"Option `path` for metadata hook `{self.PLUGIN_NAME}` must be a string"
                 )
 
             self.__path = version_file
@@ -55,15 +53,14 @@ class NodeJSMetadataHook(MetadataHookInterface):
             fields = self.config.get("fields", None)
             if fields is None:
                 self.__fields = None
-            else:
-                if not (
+            elif (
                     isinstance(fields, list) and all(isinstance(f, str) for f in fields)
                 ):
-                    raise TypeError(
-                        "Option `fields` for metadata hook `{}` "
-                        "must be a list of strings".format(self.PLUGIN_NAME)
-                    )
                 self.__fields = set(fields)
+            else:
+                raise TypeError(
+                    f"Option `fields` for metadata hook `{self.PLUGIN_NAME}` must be a list of strings"
+                )
         return self.__fields
 
     @property
@@ -74,8 +71,7 @@ class NodeJSMetadataHook(MetadataHookInterface):
             )
             if not isinstance(contributors_as_maintainers, bool):
                 raise TypeError(
-                    "Option `contributors-as-maintainers` for metadata hook `{}` "
-                    "must be a boolean".format(self.PLUGIN_NAME)
+                    f"Option `contributors-as-maintainers` for metadata hook `{self.PLUGIN_NAME}` must be a boolean"
                 )
             self.__contributors_as_maintainers = contributors_as_maintainers
         return self.__contributors_as_maintainers
@@ -87,8 +83,7 @@ class NodeJSMetadataHook(MetadataHookInterface):
 
             if not isinstance(homepage_label, str):
                 raise TypeError(
-                    "Option `homepage-label` for metadata hook `{}` "
-                    "must be a string".format(self.PLUGIN_NAME)
+                    f"Option `homepage-label` for metadata hook `{self.PLUGIN_NAME}` must be a string"
                 )
             self.__homepage_label = homepage_label
         return self.__homepage_label
@@ -100,8 +95,7 @@ class NodeJSMetadataHook(MetadataHookInterface):
 
             if not isinstance(bug_tracker_label, str):
                 raise TypeError(
-                    "Option `bugs-label` for metadata hook `{}` "
-                    "must be a string".format(self.PLUGIN_NAME)
+                    f"Option `bugs-label` for metadata hook `{self.PLUGIN_NAME}` must be a string"
                 )
             self.__bugs_label = bug_tracker_label
         return self.__bugs_label
@@ -113,8 +107,7 @@ class NodeJSMetadataHook(MetadataHookInterface):
 
             if not isinstance(bug_tracker_label, str):
                 raise TypeError(
-                    "Option `repository-label` for metadata hook `{}` "
-                    "must be a string".format(self.PLUGIN_NAME)
+                    f"Option `repository-label` for metadata hook `{self.PLUGIN_NAME}` must be a string"
                 )
             self.__repository_label = bug_tracker_label
         return self.__repository_label
@@ -131,10 +124,7 @@ class NodeJSMetadataHook(MetadataHookInterface):
         if isinstance(bugs, str):
             return bugs
 
-        if "url" not in bugs:
-            return None
-
-        return bugs["url"]
+        return None if "url" not in bugs else bugs["url"]
 
     def _parse_person(self, person: dict[str, str]) -> dict[str, str]:
         if {"url", "email"} & person.keys():
@@ -213,10 +203,8 @@ class NodeJSMetadataHook(MetadataHookInterface):
             new_metadata["urls"] = urls
 
         # Only use required metadata
-        metadata.update(
-            {
-                k: v
-                for k, v in new_metadata.items()
-                if (self.fields is None or k in self.fields)
-            }
-        )
+        metadata |= {
+            k: v
+            for k, v in new_metadata.items()
+            if (self.fields is None or k in self.fields)
+        }

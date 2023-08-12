@@ -85,9 +85,7 @@ class NodeJSVersionSource(VersionSourceInterface):
             version_file = self.config.get("path", "package.json")
             if not isinstance(version_file, (str, bytes, os.PathLike)):
                 raise TypeError(
-                    "Option `path` for version source `{}` must be a string".format(
-                        self.PLUGIN_NAME
-                    )
+                    f"Option `path` for version source `{self.PLUGIN_NAME}` must be a string"
                 )
 
             self.__path = os.fspath(version_file)
